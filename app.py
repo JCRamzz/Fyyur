@@ -62,8 +62,15 @@ class Artist(db.Model):
     past_shows = db.Column(db.String())
     upcoming_shows = db.Column(db.String())
     venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
+    shows = db.relationship('Shows', backref='showslist', lazy=True)
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    class Shows (db.Model):
+      tablename = 'Shows'
+      id = db.Column(db.Integer, primary_key=True)
+      artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
+      start_time = db.Column(db.DateTime)
+
+# TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
@@ -440,7 +447,7 @@ def create_artist_submission():
 def shows():
   # displays list of shows at /shows
   # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
+  # num_shows should be aggregated based on number of upcoming shows per venue.
   data=[{
     "venue_id": 1,
     "venue_name": "The Musical Hop",

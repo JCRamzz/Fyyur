@@ -43,6 +43,8 @@ class Venue(db.Model):
     past_shows_count = db.Column(db.Integer)
     upcoming_shows_count = db.Column(db.Integer)
 
+    shows = db.relationship('Shows', backref='showslist', lazy=True)
+
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 class Artist(db.Model):
@@ -60,13 +62,14 @@ class Artist(db.Model):
     seeking_description = db.Column(db.String())
     past_shows = db.Column(db.String())
     upcoming_shows = db.Column(db.String())
-    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
+
     shows = db.relationship('Shows', backref='showslist', lazy=True)
 
     class Shows (db.Model):
         tablename = 'Shows'
         id = db.Column(db.Integer, primary_key=True)
         artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
+        venues_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
         start_time = db.Column(db.DateTime)
 
 # TODO: implement any missing fields, as a database migration using Flask-Migrate
@@ -83,7 +86,7 @@ def format_datetime(value, format='medium'):
         format="EEEE MMMM, d, y 'at' h:mma"
     elif format == 'medium':
         format="EE MM, dd, y h:mma"
-    return babel.dates.format_datetime(date, format)
+    return babel.dates.format_datetime(date, format, locale='en')
 
 app.jinja_env.filters['datetime'] = format_datetime
 

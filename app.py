@@ -10,6 +10,7 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
+from sqlalchemy import func
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -106,29 +107,30 @@ def index():
 @app.route('/venues')
 def venues():
     # TODO: replace with real venues data.
-    #       num_shows should be aggregated based on number of upcoming shows per venue.
-    data=[{
-        "city": "San Francisco",
-        "state": "CA",
-        "venues": [{
-            "id": 1,
-            "name": "The Musical Hop",
-            "num_upcoming_shows": 0,
-        }, {
-            "id": 3,
-            "name": "Park Square Live Music & Coffee",
-            "num_upcoming_shows": 1,
-        }]
-    }, {
-        "city": "New York",
-        "state": "NY",
-        "venues": [{
-            "id": 2,
-            "name": "The Dueling Pianos Bar",
-            "num_upcoming_shows": 0,
-        }]
-    }]
-    return render_template('pages/venues.html', areas=data)
+    # num_shows should be aggregated based on number of upcoming shows per venue.
+    venues = Venue.query.with_entities (func.count (Venue.id), Venue.city, Venue.state).group_by (Venue.city,
+                                                                                                  Venue.state).order_by (
+        'state').all ()
+    data = []
+
+    for venue in venues:
+        print (f'Currently on {venue.city}')
+        venuesByCity = Venue.query.filter_by (state=venue.state).filter_by (city=venue.city).order_by ('name').all ()
+        venueArrData = []
+
+        for v in venuesByCity:
+            venueArrData.append({
+                "id": v.id,
+                "name": v.name,
+                "num_upcoming_shows": 1
+            })
+
+        data.append({
+            "city": venue.city,
+            "state": venue.state,
+            "venues": venueArrData
+        })
+    return render_template ('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():

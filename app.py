@@ -2,73 +2,42 @@ import sys
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import (
+Flask,
+render_template,
+request,
+Response,
+flash,
+redirect,
+url_for
+)
+from models import (
+app,
+db,
+Venue,
+Artist,
+Shows
+)
 from flask_moment import Moment
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import logging
-from logging import Formatter, FileHandler
+from logging import (
+Formatter,
+FileHandler
+)
 from flask_wtf import Form
 from forms import *
 from sqlalchemy import func
+
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
 
-app = Flask(__name__)
-moment = Moment(app)
 app.config.from_object('config')
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+moment = Moment(app)
+db.init_app(app)
 
-#----------------------------------------------------------------------------#
-# Models.
-#----------------------------------------------------------------------------#
-
-class Venue(db.Model):
-    __tablename__ = 'Venue'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String())
-    genres = db.Column(db.ARRAY(db.String))
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean, default=False)
-    past_shows = db.Column(db.String())
-    upcoming_shows = db.Column(db.String())
-    past_shows_count = db.Column(db.Integer)
-    upcoming_shows_count = db.Column(db.Integer)
-
-    shows = db.relationship('Shows', backref='venue', lazy=True)
-
-class Artist(db.Model):
-    __tablename__ = 'Artist'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    genres = db.Column(db.ARRAY(db.String))
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-    seeking_venue = db.Column(db.Boolean, default=True)
-    seeking_description = db.Column(db.String())
-    past_shows = db.Column(db.String())
-    upcoming_shows = db.Column(db.String())
-
-    shows = db.relationship('Shows', backref='artist', lazy=True)
-
-class Shows(db.Model):
-    tablename = 'Shows'
-    id = db.Column (db.Integer, primary_key=True)
-    artist_id = db.Column (db.Integer, db.ForeignKey ('Artist.id'), nullable=False)
-    venues_id = db.Column (db.Integer, db.ForeignKey ('Venue.id'), nullable=False)
-    start_time = db.Column (db.DateTime)
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -150,7 +119,6 @@ def search_venues():
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
     # shows the venue page with the given venue_id
-    # TODO: replace with real venue data from the venues table, using venue_id
     venue = Venue.query.get(venue_id)
 
     if not venue:
@@ -191,11 +159,9 @@ def show_venue(venue_id):
         "city": venue.city,
         "state": venue.state,
         "phone": venue.phone,
-        # "website": venue.website,
         "facebook_link": venue.facebook_link,
-        # "seeking_talent": venue.seeking_talent,
-        # "seeking_description": venue.seeking_description,
-        "image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
+        "seeking_talent": venue.seeking_talent,
+        "image_link": venue.image_link,
         "past_shows": past_shows,
         "upcoming_shows": upcoming_shows,
         "past_shows_count": len(past_shows),
@@ -216,10 +182,13 @@ def create_venue_form():
 def create_venue_submission():
     # insert form data as a new Venue record in the db
 
+    # validation for the seeking talent checkbox
+    seeking_talent = True if 'seeking_talent' in request.form else False
     try:
         form = request.form
         venue = Venue(name=form['name'], city=form['city'], state=form['state'], address=form['address'], phone=form['phone'],
-                      genres=request.form.getlist('genres'), facebook_link=form['facebook_link'])
+                      genres=request.form.getlist('genres'), facebook_link=form['facebook_link'], image_link=form['image_link'],
+                      seeking_talent=seeking_talent)
 
         db.session.add(venue)
         db.session.commit()
@@ -297,7 +266,7 @@ def show_artist(artist_id):
         past_shows.append({
             "artist_id": show.artist_id,
             "artist_name": show.artist.name,
-            "artist_image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+            "artist_image_link": show.artist.image_link,
             "start_time": show.start_time.strftime('%Y-%m-%d %H:%M:%S')
         })
 
@@ -306,7 +275,7 @@ def show_artist(artist_id):
         upcoming_shows.append({
             "artist_id": show.artist_id,
             "artist_name": show.artist.name,
-            "artist_image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+            "artist_image_link": show.artist.image_link,
             "start_time": show.start_time.strftime("%Y-%m-%d %H:%M:%S")
         })
 
@@ -320,10 +289,11 @@ def show_artist(artist_id):
         "facebook_link": artist.facebook_link,
         "seeking_venue": artist.seeking_venue,
         "seeking_description": artist.seeking_description,
-        "image_link": "https://cdn.pixabay.com/photo/2014/09/22/00/56/lead-singer-455750_960_720.jpg",
+        "image_link": artist.image_link,
         "upcoming_shows": upcoming_shows,
         "past_shows_count": len(past_shows),
         "upcoming_shows_count": len(upcoming_shows),
+        # https://cdn.pixabay.com/photo/2014/09/22/00/56/lead-singer-455750_960_720.jpg
     }
 
 
@@ -395,8 +365,13 @@ def create_artist_submission():
     # called upon submitting the new artist listing form
     try:
         form = request.form
+
+        #validation for the seeking venue checkbox
+        seeking_venue = True if 'seeking_venue' in request.form else False
+
         artist = Artist(name=form['name'], city=form['city'], state=form['state'],phone=form['phone'],
-                      genres=request.form.getlist('genres'), facebook_link=form['facebook_link'])
+                      genres=request.form.getlist('genres'), facebook_link=form['facebook_link'], image_link=form['image_link'],
+                       seeking_venue=seeking_venue, seeking_description=form['seeking_description'] )
         db.session.add(artist)
         db.session.commit()
 

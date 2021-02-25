@@ -139,15 +139,15 @@ def show_venue(venue_id):
         past_shows.append({
             "artist_id": show.artist_id,
             "artist_name": show.artist.name,
-            "artist_image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+            "artist_image_link": show.artist.image_link,
             "start_time": show.start_time.strftime('%Y-%m-%d %H:%M:%S')
         })
 
     for show in upcomeShowsQuery:
         upcoming_shows.append({
             "artist_id": show.artist_id,
-            "artist_name": show.Artist.name,
-            "artist_image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+            "artist_name": show.artist.name,
+            "artist_image_link": show.artist.image_link,
             "start_time": show.start_time.strftime("%Y-%m-%d %H:%M:%S")
         })
 
@@ -264,18 +264,18 @@ def show_artist(artist_id):
     # populating array for past shows
     for show in pastShowsQuery:
         past_shows.append({
-            "artist_id": show.artist_id,
-            "artist_name": show.artist.name,
-            "artist_image_link": show.artist.image_link,
+            "venue_id": show.venues_id,
+            "venue_name": show.venue.name,
+            "venue_image_link": show.venue.image_link,
             "start_time": show.start_time.strftime('%Y-%m-%d %H:%M:%S')
         })
 
     # populating array for upcoming shows
     for show in upcomeShowsQuery:
         upcoming_shows.append({
-            "artist_id": show.artist_id,
-            "artist_name": show.artist.name,
-            "artist_image_link": show.artist.image_link,
+            "venue_id": show.venues_id,
+            "venue_name": show.venue.name,
+            "venue_image_link": show.venue.image_link,
             "start_time": show.start_time.strftime("%Y-%m-%d %H:%M:%S")
         })
 
@@ -290,10 +290,10 @@ def show_artist(artist_id):
         "seeking_venue": artist.seeking_venue,
         "seeking_description": artist.seeking_description,
         "image_link": artist.image_link,
+        "past_shows": past_shows,
         "upcoming_shows": upcoming_shows,
         "past_shows_count": len(past_shows),
         "upcoming_shows_count": len(upcoming_shows),
-        # https://cdn.pixabay.com/photo/2014/09/22/00/56/lead-singer-455750_960_720.jpg
     }
 
 

@@ -209,8 +209,21 @@ def create_venue_submission():
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
-    # use SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
-    return None
+    try:
+        venue = Venue.query.get(venue_id)
+        venueName = venue.name
+
+        # delete record from the database using db.session.delete
+        db.session.delete(venue)
+        db.session.commit()
+        flash('The venue ' + venueName + ' was successfully deleted!')
+    except:
+        flash('ERROR: the venue ' + venueName + ' was not deleted!')
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    return redirect (url_for('index'))
 
 #  Artists
 #  ----------------------------------------------------------------
@@ -352,7 +365,7 @@ def edit_venue_submission(venue_id):
     # venue record with ID <venue_id> using the new attributes
     return redirect(url_for('show_venue', venue_id=venue_id))
 
-#  Create Artist
+#  Create and Delete Artist
 #  ----------------------------------------------------------------
 
 @app.route('/artists/create', methods=['GET'])
@@ -390,6 +403,24 @@ def create_artist_submission():
 
     return render_template ('pages/home.html')
 
+@app.route('/artist/<artist_id>', methods=['DELETE'])
+def delete_artist(artist_id):
+    # use SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+    try:
+        artist = Artist.query.get(artist_id)
+        artistName = artist.name
+
+        #delete record from the database using db.session.delete
+        db.session.delete(artist)
+        db.session.commit()
+        flash('The artist ' + artistName + ' was successfully deleted!')
+    except:
+        flash('ERROR: the artist ' + artistName + ' was not deleted! ')
+        db.session.rollback()
+        print (sys.exc_info())
+    finally:
+        db.session.close()
+    return redirect(url_for('index'))
 
 #  Shows
 #  ----------------------------------------------------------------

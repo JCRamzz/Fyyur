@@ -1,6 +1,24 @@
 {% extends 'layouts/main.html' %}
 {% block title %}{{ artist.name }} | Artist{% endblock %}
 {% block content %}
+<script>
+function artistDelete(e){
+    const id = e.target.dataset.id
+    fetch(`/artist/${id}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        window.location.href = response.url;
+    })
+    .catch(error => {
+        console.log(error);
+    })
+}
+</script>
+<button id="edit_artist" onclick="artistEdit(event)" class="btn btn-primary btn-lg"
+    data-id="{{ artist.id }}">Edit</button>
+        <button id="delete_artist" onclick="artistDelete(event)" class="btn btn-primary btn-lg"
+            data-id="{{ artist.id }}">Delete</button>
 <div class="row">
 	<div class="col-sm-6">
 		<h1 class="monospace">
@@ -73,4 +91,6 @@
 </section>
 
 {% endblock %}
+
+
 

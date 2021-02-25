@@ -407,7 +407,7 @@ def shows():
             "venue_name": show.venue.name,
             "artist_id": show.artist_id,
             "artist_name": show.artist.name,
-            "artist_image_link": "https://cdn.pixabay.com/photo/2014/09/22/00/56/lead-singer-455750_960_720.jpg",
+            "artist_image_link": show.artist.image_link,
             "start_time": show.start_time.strftime('%Y-%m-%d %H:%M:%S')
         })
 

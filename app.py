@@ -174,8 +174,7 @@ def create_venue_submission():
         form = request.form
         venue = Venue(name=form['name'], city=form['city'], state=form['state'], address=form['address'], phone=form['phone'],
                       genres=request.form.getlist('genres'), facebook_link=form['facebook_link'], image_link=form['image_link'],
-                      seeking_talent=seeking_talent, past_shows=['past_shows'], upcoming_shows=['upcoming_shows'],
-                      past_shows_count=past_shows_count, upcoming_shows_count=upcoming_shows_count)
+                      seeking_talent=seeking_talent, past_shows=0, upcoming_shows=0)
 
         db.session.add(venue)
         db.session.commit()
@@ -305,19 +304,6 @@ def show_artist(artist_id):
 def edit_artist(artist_id):
     form = ArtistForm()
     artist = Artist.query.get(artist_id)
-
-    artist={
-        "id": artist.id,
-        "name": artist.name,
-        "genres": artist.genres,
-        "city": artist.city,
-        "state": artist.state,
-        "phone": artist.phone,
-        "facebook_link": artist.facebook_link,
-        "seeking_venue": artist.seeking_venue,
-        "seeking_description": artist.seeking_description,
-        "image_link": artist.image_link
-    }
     return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
@@ -354,21 +340,6 @@ def edit_artist_submission(artist_id):
 def edit_venue(venue_id):
     form = VenueForm()
     venue = Venue.query.get(venue_id)
-
-    # populate form with values from venue with ID <venue_id>
-    venue={
-        "id": venue.id,
-        "name": venue.name,
-        "genres": venue.genres,
-        "address": venue.address,
-        "city": venue.city,
-        "state": venue.state,
-        "phone": venue.phone,
-        "facebook_link": venue.facebook_link,
-        "seeking_talent": venue.seeking_talent,
-        "image_link": venue.image_link
-    }
-
     return render_template('forms/edit_venue.html', form=form, venue=venue)
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
@@ -418,8 +389,8 @@ def create_artist_submission():
 
         artist = Artist(name=form['name'], city=form['city'], state=form['state'],phone=form['phone'],
                       genres=request.form.getlist('genres'), facebook_link=form['facebook_link'], image_link=form['image_link'],
-                       seeking_venue=seeking_venue, seeking_description=form['seeking_description'], past_shows=['past_shows'],
-                        upcoming_shows=['upcoming_shows'])
+                       seeking_venue=seeking_venue, seeking_description=form['seeking_description'], past_shows=0,
+                        upcoming_shows=0)
         db.session.add(artist)
         db.session.commit()
 

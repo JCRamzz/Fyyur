@@ -15,22 +15,8 @@ function artistDelete(e){
     })
 }
 </script>
-<script>
-function artistEdit(e){
-    const id = e.target.dataset.id
-    fetch(`/artist/${id}/edit`, {
-        method: 'GET'
-    })
-    .then(response => {
-        window.location.href = `/artists/${id}/edit`
-    })
-    .catch(error => {
-        console.log(error);
-    })
-}
-</script>
-<button id="edit_artist" onclick="artistEdit(event)" class="btn btn-primary btn-lg"
-    data-id="{{ artist.id }}">Edit</button>
+<button id="edit_artist" class="btn btn-primary btn-lg"
+    data-id="{{ artist.id }}"><a href="/artists/{{ artist.id }}/edit">Edit</a></button>
         <button id="delete_artist" onclick="artistDelete(event)" class="btn btn-primary btn-lg"
             data-id="{{ artist.id }}">Delete</button>
 <div class="row">

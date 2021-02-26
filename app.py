@@ -2,29 +2,15 @@ import sys
 import json
 import dateutil.parser
 import babel
-from flask import (
-Flask,
-render_template,
-request,
-Response,
-flash,
-redirect,
-url_for
+from flask import (Flask,render_template,request,Response,flash,redirect,url_for
 )
-from models import (
-app,
-db,
-Venue,
-Artist,
-Shows
+from models import (app,db,Venue,Artist,Shows
 )
 from flask_moment import Moment
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import logging
-from logging import (
-Formatter,
-FileHandler
+from logging import (Formatter,FileHandler
 )
 from flask_wtf import Form
 from forms import *
@@ -188,7 +174,8 @@ def create_venue_submission():
         form = request.form
         venue = Venue(name=form['name'], city=form['city'], state=form['state'], address=form['address'], phone=form['phone'],
                       genres=request.form.getlist('genres'), facebook_link=form['facebook_link'], image_link=form['image_link'],
-                      seeking_talent=seeking_talent)
+                      seeking_talent=seeking_talent, past_shows=['past_shows'], upcoming_shows=['upcoming_shows'],
+                      past_shows_count=past_shows_count, upcoming_shows_count=upcoming_shows_count)
 
         db.session.add(venue)
         db.session.commit()
@@ -431,7 +418,8 @@ def create_artist_submission():
 
         artist = Artist(name=form['name'], city=form['city'], state=form['state'],phone=form['phone'],
                       genres=request.form.getlist('genres'), facebook_link=form['facebook_link'], image_link=form['image_link'],
-                       seeking_venue=seeking_venue, seeking_description=form['seeking_description'] )
+                       seeking_venue=seeking_venue, seeking_description=form['seeking_description'], past_shows=['past_shows'],
+                        upcoming_shows=['upcoming_shows'])
         db.session.add(artist)
         db.session.commit()
 

@@ -145,6 +145,7 @@ def show_venue(venue_id):
         "city": venue.city,
         "state": venue.state,
         "phone": venue.phone,
+        "website": venue.website,
         "facebook_link": venue.facebook_link,
         "seeking_talent": venue.seeking_talent,
         "image_link": venue.image_link,
@@ -173,8 +174,8 @@ def create_venue_submission():
     try:
         form = request.form
         venue = Venue(name=form['name'], city=form['city'], state=form['state'], address=form['address'], phone=form['phone'],
-                      genres=request.form.getlist('genres'), facebook_link=form['facebook_link'], image_link=form['image_link'],
-                      seeking_talent=seeking_talent, past_shows=0, upcoming_shows=0)
+                      genres=request.form.getlist('genres'), website=form['website'], facebook_link=form['facebook_link'],
+                      image_link=form['image_link'], seeking_talent=seeking_talent, past_shows=0, upcoming_shows=0)
 
         db.session.add(venue)
         db.session.commit()
@@ -285,6 +286,7 @@ def show_artist(artist_id):
         "state": artist.state,
         "genres": artist.genres,
         "phone": artist.phone,
+        "website": artist.website,
         "facebook_link": artist.facebook_link,
         "seeking_venue": artist.seeking_venue,
         "seeking_description": artist.seeking_description,
@@ -320,6 +322,7 @@ def edit_artist_submission(artist_id):
         artist.city = form.city.data
         artist.state = form.state.data
         artist.phone = form.phone.data
+        artist.website = form.website.data
         artist.facebook_link = form.facebook_link.data
         artist.image_link = form.image_link.data
         artist.seeking_venue = form.seeking_venue.data
@@ -355,6 +358,7 @@ def edit_venue_submission(venue_id):
         venue.state = form.state.data
         venue.address = form.address.data
         venue.phone = form.phone.data
+        venue.website = form.website.data
         venue.facebook_link = form.facebook_link.data
         venue.image_link = form.image_link.data
         venue.seeking_talent = form.seeking_talent.data
@@ -388,9 +392,9 @@ def create_artist_submission():
         seeking_venue = True if 'seeking_venue' in request.form else False
 
         artist = Artist(name=form['name'], city=form['city'], state=form['state'],phone=form['phone'],
-                      genres=request.form.getlist('genres'), facebook_link=form['facebook_link'], image_link=form['image_link'],
-                       seeking_venue=seeking_venue, seeking_description=form['seeking_description'], past_shows=0,
-                        upcoming_shows=0)
+                      genres=request.form.getlist('genres'), website=form['website'], facebook_link=form['facebook_link'],
+                        image_link=form['image_link'], seeking_venue=seeking_venue, seeking_description=form['seeking_description'],
+                        past_shows=0,upcoming_shows=0)
         db.session.add(artist)
         db.session.commit()
 
@@ -469,7 +473,6 @@ def create_show_submission():
         flash('Show was successfully listed!')
 
     except:
-        # TODO: on unsuccessful db insert, flash an error instead.
         # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
         flash('An error occurred. Show could not be listed.')
         db.session.rollback()

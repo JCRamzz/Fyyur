@@ -1,7 +1,8 @@
 from datetime import datetime
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
-from wtforms.validators import DataRequired, AnyOf, URL
+from wtforms.validators import DataRequired, AnyOf, URL, Regexp
+import re
 
 class ShowForm(Form):
     artist_id = StringField(
@@ -83,10 +84,13 @@ class VenueForm(Form):
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'phone', validators=[DataRequired()]
+                             # Regexp(r'^\(?\d{3}\)?-?\d{3}-?\d{4}$',
+                             # message='Incorrect format')
+                             # ]
     )
     image_link = StringField(
-        'image_link'
+        'image_link', validators=[URL()]
     )
     genres = SelectMultipleField(
         # TODO implement enum restriction
@@ -112,6 +116,9 @@ class VenueForm(Form):
             ('Soul', 'Soul'),
             ('Other', 'Other'),
         ]
+    )
+    website = StringField(
+        'website', validators=[URL()]
     )
     facebook_link = StringField(
         'facebook_link', validators=[URL()]
@@ -184,14 +191,12 @@ class ArtistForm(Form):
         ]
     )
     phone = StringField(
-        # TODO implement validation logic for state
-        'phone'
+        'phone', validators=[DataRequired()]
     )
     image_link = StringField(
-        'image_link'
+        'image_link', validators=[URL()]
     )
     genres = SelectMultipleField(
-        # TODO implement enum restriction
         'genres', validators=[DataRequired()],
         choices=[
             ('Alternative', 'Alternative'),
@@ -215,8 +220,11 @@ class ArtistForm(Form):
             ('Other', 'Other'),
         ]
     )
+    website = StringField(
+        'website', validators=[URL(message="Invalid Format!")]
+    )
     facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+        'facebook_link', validators=[URL(message="Invalid Format!")]
     )
     seeking_venue = BooleanField(
         'seeking_venue'

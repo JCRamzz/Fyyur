@@ -25,7 +25,7 @@
       </div>
       <div class="form-group">
           <label for="phone">Phone</label>
-          {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx',value=venue.phone, autofocus = true) }}
+          {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx',  pattern="\(?[0-9]{3}\)?-?[0-9]{3}-?[0-9]{4}", value=venue.phone, autofocus = true) }}
         </div>
       <div class="form-group">
         <label for="genres">Genres</label>
@@ -33,12 +33,28 @@
         {{ form.genres(class_ = 'form-control', placeholder='Genres, separated by commas',value=venue.genres, autofocus = true) }}
       </div>
       <div class="form-group">
+          <label for="website">Website</label>
+          {{ form.website(class_ = 'form-control', placeholder='http://', value=venue.website, pattern="((http|https)://)(www.)?" +
+             "[a-zA-Z0-9@:%._\\+~#?&//=]" +
+             "{2,256}\\.[a-z]" +
+             "{2,6}\\b([-a-zA-Z0-9@:%" +
+             "._\\+~#?&//=]*)"  ,autofocus = true) }}
+        </div>
+      <div class="form-group">
           <label for="facebook_link">Facebook Link</label>
-          {{ form.facebook_link(class_ = 'form-control', placeholder='http://',value=venue.facebook_link, autofocus = true) }}
+          {{ form.facebook_link(class_ = 'form-control', placeholder='http://',value=venue.facebook_link, pattern="((http|https)://)(www.)?" +
+             "[a-zA-Z0-9@:%._\\+~#?&//=]" +
+             "{2,256}\\.[a-z]" +
+             "{2,6}\\b([-a-zA-Z0-9@:%" +
+             "._\\+~#?&//=]*)"  ,autofocus = true) }}
         </div>
       <div class="form-group">
           <label for="image_link">Image Link</label>
-          {{ form.image_link(class_ = 'form-control', placeholder='http://',value=venue.image_link, autofocus = true) }}
+          {{ form.image_link(class_ = 'form-control', placeholder='http://',value=venue.image_link, pattern="((http|https)://)(www.)?" +
+             "[a-zA-Z0-9@:%._\\+~#?&//=]" +
+             "{2,256}\\.[a-z]" +
+             "{2,6}\\b([-a-zA-Z0-9@:%" +
+             "._\\+~#?&//=]*)"  ,autofocus = true) }}
          </div>
        <div class="form-group">
           <label for="seeking_talent">Looking for talent?</label>
